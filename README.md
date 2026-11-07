@@ -30,3 +30,7 @@ npm run dev
 ```
 
 Then open `http://localhost:5199/?q=high`.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
