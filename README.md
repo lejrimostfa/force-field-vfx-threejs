@@ -6,7 +6,7 @@ Real-time 3D fire and smoke in the browser, on three.js WebGPU. A fire jet hits 
 
 Needs WebGPU: a recent desktop Chrome or Edge is the safest choice. The first load compiles shaders and can take about 20 seconds.
 
-Controls: drag to orbit, wheel to zoom, space toggles the jet, `c` toggles the camera move. The sliders change the simulation live. The links under the title switch quality: `low`, `med`, `high`, `ultra`.
+Controls: drag or two fingers to orbit, pinch or wheel to zoom, space toggles the jet, `c` toggles the automatic camera. The sliders change the simulation live. The links under the title switch quality: `low`, `med`, `high`, `ultra`.
 
 The look is inspired by the [Niagara force field by RedefineFX](https://x.com/RedefineFX/status/2118724452817223895). This is an independent recreation, made only with code. It uses no assets, footage or project files from the original.
 
@@ -16,7 +16,7 @@ The sim is a 3D gas solver in compute shaders, written in TSL. It runs as a fixe
 
 - **Two grids.** Gas runs at full resolution, velocity and pressure at half. The visible detail lives in the gas, so the pressure solve costs 8 times less.
 - **Advection.** Gas uses MacCormack, which keeps filaments sharp. Velocity stays semi-Lagrangian: MacCormack there leaves plateaus with grid aligned edges, and the gas creases into rectangular bricks. The smoother flow also gives the thick folds.
-- **Wind.** Air relaxes toward a steady wind along the jet. The fire wraps the shield and the smoke leaves in the direction of the jet.
+- **Wind and push.** Air relaxes toward a steady wind along the jet. Gas that lags behind it or flows back is driven forward, also after the impact, so the fire wraps the shield and nothing returns toward the shooter.
 - **Turbulence.** Divergence-free noise, baked once from random waves. It swirls the gas instead of compressing it, and it has no lattice to print into the image.
 - **Smoke comes from fire.** Gas that slows down loses heat faster, and the heat it loses turns into soot. The fast jet stays clean by itself.
 - **Light.** There are no three.js lights. Each frame the fire feeds low resolution light volumes through diffusion. Smoke, floor and cliff all read them.

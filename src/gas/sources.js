@@ -92,6 +92,11 @@ export function velSources(v, p, f, gasNow, velIn, velOut) {
     u.y.addAssign(p.buoyancy.mul(gs.x).sub(p.weight.mul(gs.y)).mul(p.dt));
     const wind = windAt(p).toVar();
     u.assign(mix(wind, u, exp(p.drag.negate().mul(p.dt))));
+    // One-way push. Whatever lags behind the wind or flows back at the shooter is driven forward, also after the
+    // collision: the blast against the shield would otherwise send flames back along the jet. Faster gas is left alone.
+    const ahead = normalize(wind).toVar();
+    const lag = max(p.wind.sub(dot(u, ahead)), 0);
+    u.addAssign(ahead.mul(lag).mul(exp(p.push.negate().mul(p.dt)).oneMinus()));
 
     const toC = w.sub(p.shieldC).toVar();
     const d = length(toC).toVar();

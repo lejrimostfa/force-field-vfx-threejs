@@ -27,7 +27,7 @@ export function makeSparks(renderer, scene, f, p, count = 1000) {
       const rnd = vec3(hash(seed), hash(seed.add(13.1)), hash(seed.add(29.3))).sub(0.5).mul(2).toVar();
       const front = normalize(rnd.add(vec3(1.2, 0, 0)));
       P.assign(vec4(p.shieldC.add(front.mul(p.shieldR.add(0.15))), hash(seed.add(47.7)).mul(1.8).add(0.5)));
-      V.assign(vec4(front.mul(7).add(rnd.mul(5)).add(vec3(0, 2, 0)), hash(seed.add(3.3))));
+      V.assign(vec4(front.mul(3).add(rnd.mul(6)).add(vec3(-4, 2, 0)), hash(seed.add(3.3))));
       If(p.beamOn.lessThan(0.5), () => { P.y.assign(-10); });
     }).Else(() => {
       const uvw = P.xyz.sub(lo).div(size);

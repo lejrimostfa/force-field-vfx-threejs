@@ -24,7 +24,7 @@ export function mountHud(quality, tunables) {
   const line = (s) => { el.textContent = s; };
   line(`${quality.name} ${quality.res.join('x')}  loading, the first run compiles shaders and can take 20 s`);
   const help = document.getElementById('help');
-  if (help) help.textContent = 'drag: orbit   wheel: zoom   space: beam on or off   c: camera move';
+  if (help) help.textContent = 'drag or two fingers: orbit   pinch or wheel: zoom   space: jet on or off   c: automatic camera';
   const levels = document.getElementById('levels');
   for (const name of ['low', 'med', 'high', 'ultra']) {
     const a = Object.assign(document.createElement('a'), { href: `?q=${name}`, textContent: name });

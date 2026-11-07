@@ -42,6 +42,12 @@ const camera = new THREE.PerspectiveCamera(32, width / height, 0.1, 200);
 camera.position.set(2.5, 6, 23);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(1.4, 2.4, 0);
+controls.enablePan = false;
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 7;
+controls.maxDistance = 45;
+controls.maxPolarAngle = Math.PI * 0.49; // stays above the floor
 controls.update();
 
 const fields = makeFields(q.res);
@@ -65,21 +71,23 @@ pipeline.outputNode = vec4(hdr.add(bloom(min(hdr, vec3(9)), 0.32, 0.55, 1.1).rgb
 let frame = 0;
 let orbit = q.autoRun;
 bus.on('orbitToggled', () => { orbit = !orbit; });
+// The automatic move writes the camera every frame, so it must stop as soon as a hand is on it.
+bus.on('cameraGrabbed', () => { orbit = false; });
 bus.on('paramChanged', ({ name, value }) => { params[name].value = value; });
 bus.on('beamToggled', () => { params.beamOn.value = params.beamOn.value > 0.5 ? 0 : 1; });
-mountInput();
+mountInput(controls, camera, renderer.domElement);
 bus.emit('paramsReady', { params });
 
 // Slow move around the stage, with the same framing rule as the video: low, three quarters.
 function moveCamera(t) {
   const a = 0.1 + Math.sin(t * 0.13) * 0.32;
-  camera.position.set(1.4 + Math.sin(a) * 26, 4.6 + Math.sin(t * 0.21) * 1.4, Math.cos(a) * 26);
-  controls.update();
+  camera.position.set(1.4 + Math.sin(a) * 23, 4.6 + Math.sin(t * 0.21) * 1.4, Math.cos(a) * 23);
 }
 
 function simulate() {
   params.time.value = frame * DT;
   if (orbit) moveCamera(frame * DT);
+  controls.update();
   params.target.value.y = 2 + Math.sin(frame * DT * 0.7) * 0.5;
   params.target.value.z = Math.sin(frame * DT * 0.43) * 0.7;
   solver.step();
@@ -105,11 +113,16 @@ async function measured() {
   }
 }
 
-async function loop() {
-  await measured();
+// One sim step per 1/60 s, whatever the screen. A step per display frame would run twice as fast on a 120 Hz screen.
+let lastStep = 0;
+async function loop(now) {
+  if (now - lastStep >= DT * 900) {
+    lastStep = now;
+    await measured();
+  }
   requestAnimationFrame(loop);
 }
-if (q.autoRun) loop();
+if (q.autoRun) requestAnimationFrame(loop);
 
 addEventListener('resize', () => {
   if (q.size) return;
