@@ -19,6 +19,12 @@ function beamAt(p, f, w) {
   return { core, pulse, t, dir: normalize(ab) };
 }
 
+// Wind along the jet, on the ground plane. Air relaxes toward this velocity, so it settles at a steady speed.
+function windAt(p) {
+  const flat = p.target.sub(p.nozzle).mul(vec3(1, 0, 1));
+  return normalize(flat).mul(p.wind);
+}
+
 // 0 inside the shield, 1 outside, with a soft skin.
 const outside = (p, d) => smoothstep(p.shieldR.sub(0.12), p.shieldR.add(0.12), d);
 
@@ -52,7 +58,8 @@ export function gasSources(g, p, f, gasIn, gasOut) {
     fuel.subAssign(burn);
     T.addAssign(burn.mul(p.heat));
 
-    const air = sample(f.vel[0], uvw).xyz.toVar();
+    // Speed relative to the wind: gas carried by the wind has slowed down as far as the fire is concerned.
+    const air = sample(f.vel[0], uvw).xyz.sub(windAt(p)).toVar();
     const slow = smoothstep(5, 16, length(air)).oneMinus().toVar();
     const before = T.toVar();
     T.assign(T.mul(exp(p.cool.mul(slow.mul(1.2).add(1)).negate().mul(p.dt))).sub(T.mul(T).mul(T).mul(T).mul(p.dt).mul(0.4)).max(0));
@@ -83,7 +90,8 @@ export function velSources(v, p, f, gasNow, velIn, velOut) {
     u.assign(mix(u, dir.mul(p.beamSpeed), core.mul(0.92)));
 
     u.y.addAssign(p.buoyancy.mul(gs.x).sub(p.weight.mul(gs.y)).mul(p.dt));
-    u.mulAssign(exp(p.drag.negate().mul(p.dt)));
+    const wind = windAt(p).toVar();
+    u.assign(mix(wind, u, exp(p.drag.negate().mul(p.dt))));
 
     const toC = w.sub(p.shieldC).toVar();
     const d = length(toC).toVar();
@@ -92,7 +100,9 @@ export function velSources(v, p, f, gasNow, velIn, velOut) {
     u.subAssign(nrm.mul(min(dot(u, nrm), 0)).mul(skin));
     // Art direction: a light pull toward the skin keeps the flames wrapped around the sphere past its equator.
     u.subAssign(nrm.mul(skin).mul(p.wrap).mul(p.dt));
-    const keep = outside(p, d).mul(spongeAt(uvw).mul(0.15).add(0.85));
+    // The open faces relax to the wind, not to zero: a still border would block the flow at the box entrance.
+    u.assign(mix(wind, u, spongeAt(uvw).mul(0.15).add(0.85)));
+    const keep = outside(p, d);
 
     // Burning gas pushes outward. Same rate as gasSources, read back from the fuel and temperature here.
     const burn = min(gs.w.div(p.dt), p.burnRate.mul(smoothstep(0.1, 0.28, gs.x)));

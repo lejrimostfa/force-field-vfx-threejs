@@ -16,6 +16,7 @@ The sim is a 3D gas solver in compute shaders, written in TSL. It runs as a fixe
 
 - **Two grids.** Gas runs at full resolution, velocity and pressure at half. The visible detail lives in the gas, so the pressure solve costs 8 times less.
 - **Advection.** Gas uses MacCormack, which keeps filaments sharp. Velocity stays semi-Lagrangian: MacCormack there leaves plateaus with grid aligned edges, and the gas creases into rectangular bricks. The smoother flow also gives the thick folds.
+- **Wind.** Air relaxes toward a steady wind along the jet. The fire wraps the shield and the smoke leaves in the direction of the jet.
 - **Turbulence.** Divergence-free noise, baked once from random waves. It swirls the gas instead of compressing it, and it has no lattice to print into the image.
 - **Smoke comes from fire.** Gas that slows down loses heat faster, and the heat it loses turns into soot. The fast jet stays clean by itself.
 - **Light.** There are no three.js lights. Each frame the fire feeds low resolution light volumes through diffusion. Smoke, floor and cliff all read them.

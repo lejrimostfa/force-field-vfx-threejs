@@ -13,6 +13,7 @@ export const DT = 1 / 60;
 
 // Live sliders. name is a key of makeParams() in gas/params.js.
 export const TUNABLES = [
+  { name: 'wind', label: 'Wind', max: 20 },
   { name: 'turbulence', label: 'Turbulence', max: 150 },
   { name: 'confine', label: 'Eddies', max: 80 },
   { name: 'subgrid', label: 'Fine tearing', max: 20 },

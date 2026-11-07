@@ -29,7 +29,8 @@ export function makeParams() {
     // Forces.
     buoyancy: uniform(2.8),
     weight: uniform(0),
-    drag: uniform(0.3),
+    drag: uniform(0.7),
+    wind: uniform(6),
     confine: uniform(24),
     subgrid: uniform(8),
     viscosity: uniform(0.03),
