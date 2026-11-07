@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Force Field VFX in three.js</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+      canvas { display: block; }
+      #hud, #help { position: fixed; left: 12px; color: #cfd6e6; font: 12px/1.4 ui-monospace, Menlo, monospace; pointer-events: none; }
+      #hud { top: 10px; }
+      #help { bottom: 10px; opacity: 0.6; }
+      #tune { position: fixed; right: 12px; top: 10px; width: 210px; color: #cfd6e6; font: 12px/1.4 ui-monospace, Menlo, monospace; }
+      #tune label { display: block; margin-bottom: 8px; }
+      #tune input { width: 100%; margin: 2px 0 0; }
+      #levels { position: fixed; left: 12px; top: 30px; font: 12px/1.4 ui-monospace, Menlo, monospace; }
+      #levels a { color: #8d97ad; margin-right: 10px; text-decoration: none; }
+      #levels a.on { color: #fff; text-decoration: underline; }
+      #nogpu { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; color: #cfd6e6; font: 16px/1.5 system-ui, sans-serif; }
+      #nogpu[hidden] { display: none; }
+    </style>
+  </head>
+  <body>
+    <div id="hud"></div>
+    <div id="help"></div>
+    <div id="levels"></div>
+    <div id="tune"></div>
+    <div id="nogpu" hidden>This demo needs WebGPU. Please open it in a recent desktop version of Chrome or Edge.</div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

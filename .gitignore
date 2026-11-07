@@ -1,0 +1,4 @@
+node_modules/
+dist/
+capture/
+.DS_Store
